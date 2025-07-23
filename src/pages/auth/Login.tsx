@@ -1,12 +1,11 @@
 import React from 'react';
 import AuthLayout from './components/layout/AuthLayout';
 import LoginForm from './components/forms/LoginForm';
+import { useParams } from 'react-router-dom';
 
-type LoginProps = {
-  role: string;
-};
+const Login: React.FC = () => {
+  const { role = '' } = useParams<{ role: string }>();
 
-const Login: React.FC<LoginProps> = ({ role }) => {
   return (
     <AuthLayout>
       <LoginForm role={role} />

@@ -11,12 +11,9 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/register/user" element={<Registration role={"user"} />} />
-      <Route path="/register/owner" element={<Registration role={"owner"} />} />
+      <Route path="/register/:role" element={<Registration />} />
       <Route path="/otp/:role/:email" element={<Otp />} />
-      <Route path="/login/user" element={<Login role={"user"} />} />
-      <Route path="/login/owner" element={<Login role={"owner"} />} />
-      <Route path="/login/admin" element={<Login role={"admin"} />} />
+      <Route path="/login/:role" element={<Login />} />
       <Route path="/forgot-password/:role" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 

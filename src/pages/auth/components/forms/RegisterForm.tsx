@@ -1,13 +1,10 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import AuthLayout from '../layout/AuthLayout';
 
-type RegisterFormProps = {
-  role: string;
-};
-
-const RegisterForm: React.FC<RegisterFormProps> = ({ role }) => {
+const RegisterForm = () => {
+  const { role } = useParams<{ role: string }>();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -104,7 +101,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ role }) => {
   return (
     <AuthLayout>
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-        {role.charAt(0).toUpperCase() + role.slice(1)} Register
+        {(role ? role.charAt(0).toUpperCase() + role.slice(1) : 'User')} Register
       </h2>
 
       {formErrorMessage && (
