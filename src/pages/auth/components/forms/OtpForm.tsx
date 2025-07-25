@@ -1,6 +1,6 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { postRequest } from '../../../../hooks/api';
 
 type OtpFormProps = {
   email: string;
@@ -46,11 +46,11 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, role }) => {
     const finalOtp = otp.join('');
 
     try {
-      const response = await axios.post(
-        `http://localhost:3000/api/auth/verify-otp`,
-        { otp: finalOtp, email, role },
-        { withCredentials: true }
-      );
+      const response = await postRequest('/auth/verify-otp', {
+        otp: finalOtp,
+        email,
+        role
+      });
 
       const { success, message } = response.data;
 
@@ -80,11 +80,8 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, role }) => {
     try {
       setShowResend(false);
       setCount(3);
-      await axios.post(
-        `http://localhost:3000/api/auth/resend-otp`,
-        { email },
-        { withCredentials: true }
-      );
+      await postRequest('/auth/resend-otp', { email });
+
       setMessageType('success');
       setMessage('OTP resent');
     } catch (error) {

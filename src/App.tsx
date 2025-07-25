@@ -17,7 +17,7 @@ function App() {
       <Route path="/login/:role" element={<Login />} />
       <Route path="/forgot-password/:role" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/auth-success" element={<AuthSuccess />} /> {/* Google Auth Success */}
+      <Route path="/auth-success" element={<AuthSuccess />} />
 
       <Route path="/" element={<Home />} />
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import GoogleLoginButton from '../googleAuth/GoogleLoginButton';
+import { postRequest as loginService } from '../../../../hooks/api';
 
 type LoginFormProps = {
   role: string;
@@ -29,12 +30,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ role }) => {
     setIsSubmitting(true);
 
     try {
-      await axios.post(
-        'http://localhost:3000/api/auth/login',
-        { ...formData, role },
-        { withCredentials: true }
-      );
-
+      await loginService("/auth/login", { ...formData, role });
       setSuccessMessage('✅ Login successful!');
       setTimeout(() => {
         navigate(`/home/${role}`);
