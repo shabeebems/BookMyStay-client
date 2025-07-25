@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import GoogleLoginButton from '../googleAuth/GoogleLoginButton';
 
 type LoginFormProps = {
   role: string;
@@ -59,7 +60,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ role }) => {
   };
 
   return (
-    <>
+    <div className="space-y-6">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
         {role.charAt(0).toUpperCase() + role.slice(1)} Login
       </h2>
@@ -75,6 +76,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ role }) => {
           {successMessage}
         </div>
       )}
+      
+      <div className="space-y-4">
+        <GoogleLoginButton />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="border-t w-1/5 border-gray-300"></div>
+        <p className="text-sm text-gray-500">or continue with email</p>
+        <div className="border-t w-1/5 border-gray-300"></div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -123,7 +134,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ role }) => {
           </a>
         </p>
       )}
-    </>
+    </div>
   );
 };
 
