@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AuthLayout from '../layout/AuthLayout';
+import { postRequest } from '../../../../hooks/api';
 
 const RegisterForm = () => {
   const { role } = useParams<{ role: string }>();
@@ -51,11 +52,7 @@ const RegisterForm = () => {
     setIsSubmitting(true);
 
     try {
-      await axios.post(
-        `http://localhost:3000/api/auth/users`,
-        { ...formData, role },
-        { withCredentials: true }
-      );
+      await postRequest('/auth/users', { ...formData, role });
 
       setSuccessMessage('✅ Form validation completed, proceed to OTP.');
       setErrors({});

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import { postRequest } from '../../../../hooks/api';
 
 const ForgotPasswordForm: React.FC = () => {
   const { role } = useParams<string>();
@@ -18,10 +19,8 @@ const ForgotPasswordForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(
-        'http://localhost:3000/api/auth/forgot-password',
-        { email, role }
-      );
+      const response = await postRequest('/auth/forgot-password', { email, role });
+
       setSuccessMessage(response.data.message || 'Password reset link sent to your email.');
       setTimeout(() => {
         navigate(`/login/${role}`);

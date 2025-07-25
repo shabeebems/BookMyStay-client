@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { postRequest } from '../../../../hooks/api';
 
 const ResetPasswordForm: React.FC = () => {
   const navigate = useNavigate();
@@ -40,10 +41,7 @@ const ResetPasswordForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/reset-password', {
-        token,
-        password,
-      });
+      const response = await postRequest('/auth/reset-password', { token, password });
 
       setSuccessMessage(response.data.message || 'Password reset successful.');
       setTimeout(() => {
