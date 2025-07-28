@@ -6,3 +6,4 @@ const API = axios.create({
 });
 
 export const postRequest = (route: string, data: object) => API.post(route, data);
+export const getRequest = (route: string) => API.get(route);
