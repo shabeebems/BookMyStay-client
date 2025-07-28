@@ -30,10 +30,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ role }) => {
     setIsSubmitting(true);
 
     try {
-      await loginService("/auth/login", { ...formData, role });
+      const response = await loginService("/auth/login", { ...formData, role });
+      localStorage.setItem('token', response?.data?.token);
       setSuccessMessage('✅ Login successful!');
       setTimeout(() => {
-        navigate(`/home/${role}`);
+        if(role === "user") {
+          navigate(`/`);
+        } else {
+          navigate(`/${role}-dashboard`);
+        }
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -72,10 +77,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ role }) => {
           {successMessage}
         </div>
       )}
-      
-      <div className="space-y-4">
-        <GoogleLoginButton />
-      </div>
+      { role === "user" && (
+        <div className="space-y-4">
+          <GoogleLoginButton />
+        </div>
+      ) }
 
       <div className="flex items-center justify-between">
         <div className="border-t w-1/5 border-gray-300"></div>

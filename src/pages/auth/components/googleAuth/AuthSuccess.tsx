@@ -9,7 +9,7 @@ const AuthSuccess: React.FC = () => {
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
     if (token) {
-      // localStorage.setItem('token', token);
+      localStorage.setItem('token', token);
       navigate('/');
     } else {
       navigate('/login/user');

@@ -7,6 +7,9 @@ import Home from './pages/user/Home'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import ResetPassword from './pages/auth/ResetPassword'
 import AuthSuccess from './pages/auth/components/googleAuth/AuthSuccess'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import OwnerDashboard from './pages/owner/OwnerDashboard'
+import RoleBasedWrapper from './wrappers/RoleBasedWrapper'
 
 function App() {
 
@@ -19,7 +22,18 @@ function App() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/auth-success" element={<AuthSuccess />} />
 
+      {/* user route */}
       <Route path="/" element={<Home />} />
+
+      {/* admin route */}
+      <Route element={<RoleBasedWrapper allowedRoles={['admin']} />}>
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      </Route>
+
+      {/* owner route */}
+      <Route element={<RoleBasedWrapper allowedRoles={['owner']} />}>
+        <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+      </Route>
 
     </Routes>
   )
