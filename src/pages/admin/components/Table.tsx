@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { getRequest } from '../../../hooks/api';
+import { getRequest, putRequest } from '../../../hooks/api';
 
 type User = {
-  id: number;
+  _id: number;
   name: string;
   email: string;
   mobile?: string;
@@ -28,6 +28,22 @@ const Table: React.FC<TableProps> = ({ role }) => {
     fetchUsers();
   }, []);
 
+  const toggleBlock = async (userId: number) => {
+    try {
+      const response = await putRequest(`/admin/user`, { userId });
+      if (response.data.success) {
+        setUsers(prevUsers =>
+          prevUsers.map(user =>
+            user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to toggle block status:', error);
+    }
+  };
+
+
   return (
     <div className="p-6 m-4 bg-white shadow-md rounded-xl overflow-x-auto">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -45,7 +61,7 @@ const Table: React.FC<TableProps> = ({ role }) => {
         </thead>
         <tbody>
           {users.map(user => (
-            <tr key={user.id} className="border-b hover:bg-gray-50">
+            <tr key={user._id} className="border-b hover:bg-gray-50">
               <td className="px-4 py-3">{user.name}</td>
               <td className="px-4 py-3">{user.email}</td>
               <td className="px-4 py-3">{user.mobile || 'N/A'}</td>
@@ -56,7 +72,7 @@ const Table: React.FC<TableProps> = ({ role }) => {
               </td>
               <td className="px-4 py-3">
                 <button
-                  // onClick={() => toggleBlock(user.id)}
+                  onClick={() => toggleBlock(user._id)}
                   className={`px-3 py-1 rounded-full text-white text-xs font-semibold
                     ${user.isBlocked ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}
                   `}

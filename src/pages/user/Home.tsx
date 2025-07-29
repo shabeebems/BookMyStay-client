@@ -45,7 +45,7 @@ const Home: React.FC = () => {
     <nav className="hidden md:flex space-x-8">
       <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Home</a>
       <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Hotels</a>
-      <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Profile</a>
+      <a href="/user-dashboard" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Profile</a>
     </nav>
     
     <div className="flex items-center space-x-4">

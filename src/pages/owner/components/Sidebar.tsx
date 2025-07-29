@@ -24,12 +24,12 @@ const OwnerSidebar: React.FC<SidebarProps> = ({ active, changeActive }) => {
 
   return (
     <aside
-      className={`${open ? 'w-56 lg:w-72' : 'w-20'} duration-300 h-screen p-5 pt-8 bg-gradient-to-b from-blue-50 to-white shadow-xl relative`}
+      className={`${open ? 'w-56 lg:w-72' : 'w-20'} duration-300 h-screen p-5 pt-8 bg-gradient-to-b shadow-xl relative`}
     >
       {/* Logo & Collapse Control */}
       <div className="flex items-center gap-4">
         <img
-          src="/owner-logo.png"
+          src="https://www.shutterstock.com/image-vector/house-logo-template-design-vector-600nw-741515455.jpg"
           alt="Owner Logo"
           onClick={() => window.innerWidth > 640 && setOpen(true)}
           className={`cursor-pointer duration-500 w-14 ${open && 'rotate-[360deg]'}`}

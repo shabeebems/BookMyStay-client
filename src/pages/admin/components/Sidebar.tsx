@@ -30,7 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ active, changeActive }) => {
       {/* Logo & Collapse Control */}
       <div className="flex items-center gap-4">
         <img
-          src="/logo.png"
+          src="https://www.shutterstock.com/image-vector/house-logo-template-design-vector-600nw-741515455.jpg"
           alt="Logo"
           onClick={() => window.innerWidth > 640 && setOpen(true)}
           className={`cursor-pointer duration-500 w-16 ${open && 'rotate-[360deg]'}`}
