@@ -10,20 +10,29 @@ import AuthSuccess from './pages/auth/components/googleAuth/AuthSuccess'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import OwnerDashboard from './pages/owner/OwnerDashboard'
 import RoleBasedWrapper from './wrappers/RoleBasedWrapper'
+import PublicRouteWrapper from './wrappers/PublicRouteWrapper'
+import UserDashboard from './pages/user/dashboard/UserDashboard'
 
 function App() {
 
   return (
     <Routes>
-      <Route path="/register/:role" element={<Registration />} />
-      <Route path="/otp/:role/:email" element={<Otp />} />
-      <Route path="/login/:role" element={<Login />} />
-      <Route path="/forgot-password/:role" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/auth-success" element={<AuthSuccess />} />
+      <Route element={<PublicRouteWrapper />}>
+        <Route path="/register/:role" element={<Registration />} />
+        <Route path="/otp/:role/:email" element={<Otp />} />
+        <Route path="/login/:role" element={<Login />} />
+        <Route path="/forgot-password/:role" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/auth-success" element={<AuthSuccess />} />
+      </Route>
+
+      <Route path="/" element={<Home />} />
 
       {/* user route */}
-      <Route path="/" element={<Home />} />
+      <Route element={<RoleBasedWrapper allowedRoles={['user']} />}>
+        <Route path="/user-dashboard" element={<UserDashboard />} />
+      </Route>
+
 
       {/* admin route */}
       <Route element={<RoleBasedWrapper allowedRoles={['admin']} />}>
