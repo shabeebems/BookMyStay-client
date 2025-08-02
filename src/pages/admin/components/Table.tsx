@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getRequest, putRequest } from '../../../hooks/api';
+import Swal from "sweetalert2"
 
 type User = {
   _id: number;
@@ -10,7 +11,7 @@ type User = {
     city?: string;
     state?: string;
   };
-  isBlocked: boolean;
+  isBlock: boolean;
 };
 
 type TableProps = {
@@ -30,14 +31,32 @@ const Table: React.FC<TableProps> = ({ role }) => {
 
   const toggleBlock = async (userId: number) => {
     try {
-      const response = await putRequest(`/admin/user`, { userId });
-      if (response.data.success) {
-        setUsers(prevUsers =>
-          prevUsers.map(user =>
-            user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user
-          )
-        );
+      Swal.fire({
+        title: "Do you want to save the changes?",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        denyButtonText: `Don't save`
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          const blocking = async() => {
+
+            const response = await putRequest(`/admin/user`, { userId });
+            if (response.data.success) {
+              setUsers(prevUsers =>
+                prevUsers.map(user =>
+                  user._id === userId ? { ...user, isBlock: !user.isBlock } : user
+                )
+              );
+            }        
       }
+      blocking()
+    } else if (result.isDenied) {
+          Swal.fire("Changes are not saved", "", "info");
+        }
+      });
+      
     } catch (error) {
       console.error('Failed to toggle block status:', error);
     }
@@ -74,10 +93,10 @@ const Table: React.FC<TableProps> = ({ role }) => {
                 <button
                   onClick={() => toggleBlock(user._id)}
                   className={`px-3 py-1 rounded-full text-white text-xs font-semibold
-                    ${user.isBlocked ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}
+                    ${user.isBlock ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}
                   `}
                 >
-                  {user.isBlocked ? 'Unblock' : 'Block'}
+                  {user.isBlock ? 'Unblock' : 'Block'}
                 </button>
               </td>
             </tr>

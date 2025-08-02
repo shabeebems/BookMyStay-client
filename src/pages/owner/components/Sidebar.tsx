@@ -6,9 +6,10 @@ import { IoIosArrowBack } from "react-icons/io";
 type SidebarProps = {
   active: string;
   changeActive: (title: string) => void;
+  isVerified: boolean;
 };
 
-const OwnerSidebar: React.FC<SidebarProps> = ({ active, changeActive }) => {
+const OwnerSidebar: React.FC<SidebarProps> = ({ active, changeActive, isVerified }) => {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
@@ -19,6 +20,7 @@ const OwnerSidebar: React.FC<SidebarProps> = ({ active, changeActive }) => {
 
   const menus = [
     { title: 'Dashboard', icon: <MdOutlineDashboard color="#0E4D64" /> },
+    { title: 'Notification', icon: <CgProfile color="#0E4D64" /> },
     { title: 'Profile', icon: <CgProfile color="#0E4D64" /> },
   ];
 
@@ -52,24 +54,36 @@ const OwnerSidebar: React.FC<SidebarProps> = ({ active, changeActive }) => {
       {/* Sidebar Menu */}
       <nav className="pt-6">
         <ul className="space-y-3">
-          {menus.map((menu, index) => (
-            <li
-              key={index}
-              onClick={() => changeActive(menu.title)}
-              className={`flex items-center gap-x-4 p-3 rounded-xl cursor-pointer transition-all duration-300 shadow-sm
-                ${menu.title === active
-                  ? 'bg-gradient-to-r from-blue-100 to-blue-200 shadow-md'
-                  : 'hover:bg-blue-50 hover:scale-[1.04] hover:shadow-md'}`}
-            >
-              {menu.icon}
-              {open && (
-                <span className="origin-left transition-all duration-200 text-blue-900 text-base font-semibold">
-                  {menu.title}
-                </span>
-              )}
-            </li>
-          ))}
+          {menus.map((menu, index) => {
+            const isDisabled = menu.title !== 'Dashboard' && menu.title !== 'Notification' && !isVerified;
+
+            return (
+              <li
+                key={index}
+                onClick={() => {
+                  if (!isDisabled) {
+                    changeActive(menu.title);
+                  }
+                }}
+                className={`flex items-center gap-x-4 p-3 rounded-xl cursor-pointer transition-all duration-300 shadow-sm
+                  ${menu.title === active && !isDisabled
+                    ? 'bg-gradient-to-r from-blue-100 to-blue-200 shadow-md'
+                    : 'hover:bg-blue-50 hover:scale-[1.04] hover:shadow-md'}
+                  ${isDisabled && 'opacity-50 pointer-events-none'}
+                `}
+              >
+                {menu.icon}
+                {open && (
+                  <span className={`origin-left transition-all duration-200 text-base font-semibold
+                    ${isDisabled ? 'text-gray-400' : 'text-blue-900'}`}>
+                    {menu.title}
+                  </span>
+                )}
+              </li>
+            );
+          })}
         </ul>
+
       </nav>
     </aside>
   );

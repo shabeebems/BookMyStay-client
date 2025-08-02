@@ -15,7 +15,7 @@ const Navbar: React.FC<NavbarProps> = ({ role }) => {
   const logout = async() => {
     await logoutRequest("/auth/logout")
     localStorage.removeItem('token');
-    navigate(`/login/${role}`);
+    navigate(`/login/${role.toLowerCase()}`);
   }
   
   return (

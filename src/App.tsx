@@ -12,6 +12,8 @@ import OwnerDashboard from './pages/owner/OwnerDashboard'
 import RoleBasedWrapper from './wrappers/RoleBasedWrapper'
 import PublicRouteWrapper from './wrappers/PublicRouteWrapper'
 import UserDashboard from './pages/user/dashboard/UserDashboard'
+import NotVerified from './pages/owner/NotVerified'
+import UnverifiedOwnerWrapper from './wrappers/UnverifiedOwnerWrapper'
 
 function App() {
 
@@ -44,6 +46,9 @@ function App() {
         <Route path="/owner-dashboard" element={<OwnerDashboard />} />
       </Route>
 
+      <Route element={<UnverifiedOwnerWrapper />}>
+        <Route path="/not-verified" element={<NotVerified />} />
+      </Route>    
     </Routes>
   )
 }
