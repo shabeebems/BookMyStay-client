@@ -20,6 +20,7 @@ const OwnerSidebar: React.FC<SidebarProps> = ({ active, changeActive, isVerified
 
   const menus = [
     { title: 'Dashboard', icon: <MdOutlineDashboard color="#0E4D64" /> },
+    { title: 'Notification', icon: <CgProfile color="#0E4D64" /> },
     { title: 'Profile', icon: <CgProfile color="#0E4D64" /> },
   ];
 
@@ -54,7 +55,7 @@ const OwnerSidebar: React.FC<SidebarProps> = ({ active, changeActive, isVerified
       <nav className="pt-6">
         <ul className="space-y-3">
           {menus.map((menu, index) => {
-            const isDisabled = menu.title !== 'Dashboard' && !isVerified;
+            const isDisabled = menu.title !== 'Dashboard' && menu.title !== 'Notification' && !isVerified;
 
             return (
               <li

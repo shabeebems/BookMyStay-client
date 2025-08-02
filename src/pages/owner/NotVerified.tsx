@@ -2,6 +2,7 @@ import { useCallback, useState } from "react"
 import Sidebar from "./components/Sidebar"
 import Navbar from "../../components/Navbar"
 import ProfileVerification from "./components/ProfileVerification"
+import NotificationPage from "./pages/NotificationList"
 
 const NotVerified = () => {
   
@@ -17,7 +18,8 @@ const NotVerified = () => {
               <Navbar role={"owner"} />
             </div>
             <div className="p-6 pb-12">
-              <ProfileVerification />
+              {active === "Dashboard" && <ProfileVerification /> }
+              {active === "Notification" && <NotificationPage />}
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import Sidebar from "./components/Sidebar"
 import UsersList from "./pages/UsersList"
 import OwnersList from "./pages/OwnersList"
 import Navbar from "../../components/Navbar"
+import NotificationList from "./components/NotificationList"
 
 const AdminDashboard = () => {
 
@@ -20,6 +21,7 @@ const AdminDashboard = () => {
             </div>
             <div className="p-6 pb-12">
               {active === "Dashboard" && <h1>Dashboard</h1>}
+              {active === "Notifications" && <NotificationList />}
               {active === "Users" && <UsersList />}
               {active === "Owners" && <OwnersList />}
             </div>

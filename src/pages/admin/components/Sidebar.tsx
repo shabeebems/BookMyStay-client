@@ -19,6 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ active, changeActive }) => {
 
   const menus = [
     { title: 'Dashboard', icon: <MdOutlineDashboard color='#030032' /> },
+    { title: 'Notifications', icon: <GrUserWorker color='#030032' /> },
     { title: 'Users', icon: <GrUserWorker color='#030032' /> },
     { title: 'Owners', icon: <GrUserWorker color='#030032' /> },
   ];
