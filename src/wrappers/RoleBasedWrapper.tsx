@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 
 interface TokenPayload {
   role: string;
+  isVerified: boolean;
 }
 
 interface RoleBasedWrapperProps {
@@ -20,6 +21,9 @@ const RoleBasedWrapper: React.FC<RoleBasedWrapperProps> = ({ allowedRoles }) => 
   try {
     const decoded = jwtDecode<TokenPayload>(token);
     console.log(decoded)
+    if(decoded.role === "owner" && !decoded.isVerified) {
+      return <Navigate to={`/not-verified`} replace />; // Access Denied
+    }
     if (allowedRoles.includes(decoded.role)) {
       return <Outlet />; // Render nested routes
     } else {

@@ -11,7 +11,7 @@ const OwnerDashboard = () => {
   return (
     <>
       <div className='flex'>
-        <OwnerSidebar active={active} changeActive={changeActive} />
+        <OwnerSidebar active={active} changeActive={changeActive} isVerified={true} />
           
           <div className='flex-1 flex flex-col max-h-screen overflow-auto bg-blue-50'>
             <div className="sticky top-0 z-50 bg-blue-50 shadow-md">
