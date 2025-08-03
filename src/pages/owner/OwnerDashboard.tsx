@@ -2,6 +2,7 @@ import { useCallback, useState } from "react"
 import OwnerSidebar from "./components/Sidebar"
 import ProfilePage from "../../components/Profile"
 import Navbar from "../../components/Navbar"
+import NotificationList from "./pages/NotificationList"
 
 const OwnerDashboard = () => {
 
@@ -20,6 +21,7 @@ const OwnerDashboard = () => {
             <div className="p-6 pb-12">
               {active === "Dashboard" && <h1>Dashboard</h1>}
               {active === "Profile" && <ProfilePage />}
+              {active === "Notification" && <NotificationList />}
             </div>
           </div>
 
