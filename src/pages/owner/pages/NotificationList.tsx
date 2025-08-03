@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getRequest } from '../../../hooks/api';
+import { protectedGetRequest } from '../../../hooks/api';
 
 interface Notification {
   _id: string;
@@ -17,7 +17,7 @@ const NotificationList: React.FC = () => {
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      const response = await getRequest('/notification');
+      const response = await protectedGetRequest('/notification');
       if (response && response.data && Array.isArray(response.data.data)) {
         setNotifications(response.data.data);
       }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getRequest, putRequest } from '../../../hooks/api';  // Assuming you have putRequest implemented
+import { protectedGetRequest, protectedPutRequest } from '../../../hooks/api';  // Assuming you have putRequest implemented
 
 interface Address {
   city?: string;
@@ -32,7 +32,7 @@ const ProfileVerificationPage = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await getRequest("/profile");
+      const response = await protectedGetRequest("/profile");
       if (response && response.data && response.data.data) {
         setUser(response.data.data);
       }
@@ -93,7 +93,7 @@ const ProfileVerificationPage = () => {
       const base64Files = await Promise.all(selectedFiles.map(file => convertFileToBase64(file)));
 
       // Example API Call (adjust route & payload structure as per your backend)
-      const response = await putRequest('/owner/verify-documents', {
+      const response = await protectedPutRequest('/owner/verify-documents', {
         documents: base64Files,  // Array of Base64 encoded images
       });
 

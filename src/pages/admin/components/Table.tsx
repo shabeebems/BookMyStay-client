@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getRequest, putRequest } from '../../../hooks/api';
+import { protectedGetRequest, protectedPutRequest } from '../../../hooks/api';
 import Swal from "sweetalert2"
 
 type User = {
@@ -23,7 +23,7 @@ const Table: React.FC<TableProps> = ({ role }) => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await getRequest(`/admin/users/${role}`);
+      const response = await protectedGetRequest(`/admin/users/${role}`);
       setUsers(response.data.data);
     };
     fetchUsers();
@@ -42,7 +42,7 @@ const Table: React.FC<TableProps> = ({ role }) => {
         if (result.isConfirmed) {
           const blocking = async() => {
 
-            const response = await putRequest(`/admin/user`, { userId });
+            const response = await protectedPutRequest(`/admin/user`, { userId });
             if (response.data.success) {
               setUsers(prevUsers =>
                 prevUsers.map(user =>

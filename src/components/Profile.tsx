@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaPlus } from 'react-icons/fa6';
-import { getRequest, putRequest } from '../hooks/api';
+import { protectedGetRequest, protectedPutRequest } from '../hooks/api';
 
 interface Address {
   city?: string;
@@ -30,7 +30,7 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const response = await getRequest("/profile");
+      const response = await protectedGetRequest("/profile");
       if (response && response.data && response.data.data) {
         setUser(response.data.data);
       }
@@ -57,7 +57,7 @@ const ProfilePage: React.FC = () => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = async() => {
-      const response = await putRequest("/profile", { userId: user._id, image: reader.result })
+      const response = await protectedPutRequest("/profile", { userId: user._id, image: reader.result })
       if (response && response.data && response.data.data) {
         const updatedImage = response.data.data.image;
         setUser((prevUser) => ({

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getRequest, putRequest } from '../../../hooks/api';
+import { protectedGetRequest, protectedPutRequest } from '../../../hooks/api';
 
 interface Notification {
   _id: string;
@@ -20,7 +20,7 @@ const NotificationList: React.FC = () => {
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      const response = await getRequest('/admin/notification');
+      const response = await protectedGetRequest('/admin/notification');
       if (response && response.data && Array.isArray(response.data.data)) {
         setNotifications(response.data.data);
       }
@@ -72,7 +72,7 @@ const NotificationList: React.FC = () => {
         payload.rejectReason = rejectReason;
       }
 
-      const response = await putRequest(`/admin/notification/${selectedNotification._id}`, payload);
+      const response = await protectedPutRequest(`/admin/notification/${selectedNotification._id}`, payload);
 
       if (response && response.data && response.data.success) {
         alert(`Notification ${status}`);
