@@ -7,11 +7,9 @@ const apiClient = axios.create({
 
 apiClient.interceptors.response.use(
   (response) => {
-    console.log('polo')
     return response;
   },
   (error) => {
-    console.log('polos')
     if(error.response.status == 406) {
         // Deleting local storage
         localStorage.clear();

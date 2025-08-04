@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { protectedGetRequest, protectedPutRequest } from '../../../hooks/api';
+import { protectedGetRequest, protectedPostRequest } from '../../../hooks/api';
 import ToastMessage from '../../../components/ToastMessage';  // Assuming path
 
 interface Address {
@@ -103,7 +103,7 @@ const ProfileVerificationPage = () => {
     try {
       const base64Files = await Promise.all(selectedFiles.map(file => convertFileToBase64(file)));
 
-      const response = await protectedPutRequest('/owner/verify-documents', {
+      const response = await protectedPostRequest('/owner/owner-notifications', {
         documents: base64Files,
       });
 
