@@ -114,7 +114,6 @@ const NotificationList: React.FC = () => {
                   className="w-full h-64 object-cover rounded-md"
                 />
 
-                {/* Prev Button */}
                 {selectedNotification.documents.length > 1 && (
                   <>
                     <button
@@ -137,6 +136,15 @@ const NotificationList: React.FC = () => {
             <div className="mt-4 text-sm text-gray-600">
               {selectedNotification.message}
             </div>
+
+            {selectedNotification.requestStatus === 'rejected' && (
+              <div className="mt-4 text-sm text-red-600 font-medium">
+                Your request has been rejected. You can re-apply by following:
+                <div className="mt-1 font-semibold text-gray-700">
+                  Dashboard &gt; choose files &gt; submit documents
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
