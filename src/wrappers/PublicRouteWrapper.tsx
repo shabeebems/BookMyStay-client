@@ -15,7 +15,6 @@ const PublicRouteWrapper: React.FC = () => {
 
   try {
     const decoded = jwtDecode<TokenPayload>(token);
-    console.log(decoded);
     // If token exists, redirect to their dashboard
     switch (decoded.role) {
       case 'admin':

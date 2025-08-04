@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
-
   const navigate = useNavigate();
-    
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+
+    // Listen to token changes (cross-tabs or manual clearing)
+    const handleStorageChange = () => {
+      const updatedToken = localStorage.getItem('token');
+      setIsLoggedIn(!!updatedToken);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    navigate('/login/user');
+  };
+
   const mostPickedHotels = [
     {
       name: "Maldives",
@@ -36,33 +58,46 @@ const Home: React.FC = () => {
     <div className="min-h-screen flex flex-col justify-between bg-white text-gray-800">
       {/* Header */}
       <header className="flex justify-between items-center px-4 sm:px-8 py-3 shadow-sm sticky top-0 bg-white z-50">
-    <div className="flex items-center">
-      <h1 className="text-2xl sm:text-3xl font-bold text-blue-600">
-        <span className="text-blue-800">Book</span>MyStay
-      </h1>
-    </div>
-    
-    <nav className="hidden md:flex space-x-8">
-      <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Home</a>
-      <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Hotels</a>
-      <a href="/user-dashboard" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Profile</a>
-    </nav>
-    
-    <div className="flex items-center space-x-4">
-      <button
-        onClick={() => navigate('/register/user')}
-        className="hidden sm:block text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium cursor-pointer"
-    >
-        Sign Up
-      </button>
-      <button 
-        onClick={() => navigate('/login/user')}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors duration-200 font-medium shadow-sm hover:shadow-md cursor-pointer"
-    >
-        Login
-      </button>
-    </div>
-  </header>
+        <div className="flex items-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-blue-600">
+            <span className="text-blue-800">Book</span>MyStay
+          </h1>
+        </div>
+
+        <nav className="hidden md:flex space-x-8">
+          <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Home</a>
+          <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Hotels</a>
+          {isLoggedIn && (
+            <a href="/user-dashboard" className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium">Profile</a>
+          )}
+        </nav>
+
+        <div className="flex items-center space-x-4">
+          {!isLoggedIn ? (
+            <>
+              <button
+                onClick={() => navigate('/register/user')}
+                className="hidden sm:block text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium cursor-pointer"
+              >
+                Sign Up
+              </button>
+              <button
+                onClick={() => navigate('/login/user')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors duration-200 font-medium shadow-sm hover:shadow-md cursor-pointer"
+              >
+                Login
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg transition-colors duration-200 font-medium shadow-sm hover:shadow-md cursor-pointer"
+            >
+              Logout
+            </button>
+          )}
+        </div>
+      </header>
 
       {/* Hero Section */}
       <section className="flex flex-col md:flex-row items-center justify-between px-6 py-12 bg-gray-50 gap-10">
