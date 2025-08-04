@@ -1,7 +1,6 @@
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { getRequest } from '../hooks/api';
 
 interface TokenPayload {
   role: string;
@@ -21,12 +20,6 @@ const UnverifiedOwnerWrapper: React.FC = () => {
 
     // Only allow owner who is NOT verified
     if (decoded.role === 'owner' && !decoded.isVerified) {
-      const fetchProfile = async () => {
-        await getRequest("/owner/check_isVerified");
-        localStorage.removeItem('token');
-        return <Navigate to="/login/owner" replace />;
-      };
-      fetchProfile();
       return <Outlet />;
     } else {
       // Redirect verified owner to dashboard, others to their login
