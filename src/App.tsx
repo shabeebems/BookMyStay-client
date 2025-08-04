@@ -14,6 +14,7 @@ import PublicRouteWrapper from './wrappers/PublicRouteWrapper'
 import UserDashboard from './pages/user/dashboard/UserDashboard'
 import NotVerified from './pages/owner/NotVerified'
 import UnverifiedOwnerWrapper from './wrappers/UnverifiedOwnerWrapper'
+import PublicOrUserWrapper from './wrappers/PublicOrUserWrapper'
 
 function App() {
 
@@ -28,7 +29,9 @@ function App() {
         <Route path="/auth-success" element={<AuthSuccess />} />
       </Route>
 
-      <Route path="/" element={<Home />} />
+      <Route element={<PublicOrUserWrapper />}>
+        <Route path="/" element={<Home />} />
+      </Route>
 
       {/* user route */}
       <Route element={<RoleBasedWrapper allowedRoles={['user']} />}>
