@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { protectedGetRequest, protectedPutRequest } from '../../../hooks/api';  // Assuming you have putRequest implemented
+import { protectedGetRequest, protectedPutRequest } from '../../../hooks/api';
+import ToastMessage from '../../../components/ToastMessage';  // Assuming path
 
 interface Address {
   city?: string;
@@ -30,6 +31,10 @@ const ProfileVerificationPage = () => {
     documents: [],
   });
 
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
+
   useEffect(() => {
     const fetchProfile = async () => {
       const response = await protectedGetRequest("/profile");
@@ -40,6 +45,12 @@ const ProfileVerificationPage = () => {
     fetchProfile();
   }, []);
 
+  const showToast = (message: string, severity: 'success' | 'error') => {
+    setToastMessage(message);
+    setToastSeverity(severity);
+    setToastOpen(true);
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
@@ -49,12 +60,12 @@ const ProfileVerificationPage = () => {
 
       for (let file of filesArray) {
         if (file.size / (1024 * 1024) > MAX_FILE_SIZE_MB) {
-          alert(`${file.name} exceeds 2MB size limit.`);
+          showToast(`${file.name} exceeds 2MB size limit.`, 'error');
           continue;
         }
 
         if (selectedFiles.length + newFiles.length >= MAX_FILES) {
-          alert('You can upload a maximum of 3 files.');
+          showToast('You can upload a maximum of 3 files.', 'error');
           break;
         }
 
@@ -85,109 +96,116 @@ const ProfileVerificationPage = () => {
 
   const handleSubmit = async () => {
     if (selectedFiles.length === 0) {
-      alert('Please select at least one document.');
+      showToast('Please select at least one document.', 'error');
       return;
     }
 
     try {
       const base64Files = await Promise.all(selectedFiles.map(file => convertFileToBase64(file)));
 
-      // Example API Call (adjust route & payload structure as per your backend)
       const response = await protectedPutRequest('/owner/verify-documents', {
-        documents: base64Files,  // Array of Base64 encoded images
+        documents: base64Files,
       });
 
       if (response && response.data && response.data.success) {
-        alert('Documents uploaded successfully!');
+        showToast('Documents uploaded successfully!', 'success');
         setSelectedFiles([]);
         setPreviewUrls([]);
       } else {
-        alert('Failed to upload documents.');
+        showToast('Failed to upload documents.', 'error');
       }
     } catch (error) {
       console.error(error);
-      alert('An error occurred while uploading documents.');
+      showToast('An error occurred while uploading documents.', 'error');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white shadow-xl rounded-2xl p-8 max-w-xl w-full space-y-6">
-        <h2 className="text-2xl font-bold text-indigo-800">Profile Verification</h2>
+    <>
+      <ToastMessage
+        open={toastOpen}
+        message={toastMessage}
+        severity={toastSeverity}
+        onClose={() => setToastOpen(false)}
+      />
 
-        <div className="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-xl">
-          You are <span className="font-semibold">not verified</span>. Please submit your documents.
-          After admin verification, you can add your first hotel.
-        </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white shadow-xl rounded-2xl p-8 max-w-xl w-full space-y-6">
+          <h2 className="text-2xl font-bold text-indigo-800">Profile Verification</h2>
 
-        {/* User Info (Static) */}
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user.name}</div>
+          <div className="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-xl">
+            You are <span className="font-semibold">not verified</span>. Please submit your documents.
+            After admin verification, you can add your first hotel.
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user.email}</div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Mobile</label>
-            <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user.mobile}</div>
-          </div>
-          <div className="flex gap-3">
-            <div className="w-1/2">
-              <label className="block text-sm font-medium text-gray-700">City</label>
-              <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user?.address?.city || "NA"}</div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user.name}</div>
             </div>
-            <div className="w-1/2">
-              <label className="block text-sm font-medium text-gray-700">State</label>
-              <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user?.address?.state || "NA"}</div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user.email}</div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Mobile</label>
+              <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user.mobile}</div>
+            </div>
+            <div className="flex gap-3">
+              <div className="w-1/2">
+                <label className="block text-sm font-medium text-gray-700">City</label>
+                <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user?.address?.city || "NA"}</div>
+              </div>
+              <div className="w-1/2">
+                <label className="block text-sm font-medium text-gray-700">State</label>
+                <div className="border border-gray-300 rounded-md p-2 bg-gray-100 text-gray-700">{user?.address?.state || "NA"}</div>
+              </div>
             </div>
           </div>
+
+          {/* Document Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Upload Documents (Max 3, Each below 2MB)
+            </label>
+            <input
+              type="file"
+              multiple
+              accept="image/jpeg, image/jpg, image/png"
+              onChange={handleFileChange}
+              className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+            />
+
+            {previewUrls.length > 0 && (
+              <div className="mt-4 grid grid-cols-3 gap-4">
+                {previewUrls.map((url, index) => (
+                  <div key={index} className="relative border rounded-md overflow-hidden shadow-sm group">
+                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover" />
+                    <button
+                      onClick={() => handleRemoveFile(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="text-sm text-gray-600">
+            You can upload your <span className="font-semibold">Aadhar, Pancard, Passport, SSLC</span>, or other valid documents.
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 transition"
+          >
+            Submit Documents
+          </button>
         </div>
-
-        {/* Document Upload */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Upload Documents (Max 3, Each below 2MB)
-          </label>
-          <input
-            type="file"
-            multiple
-            accept="image/jpeg, image/jpg, image/png"
-            onChange={handleFileChange}
-            className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-          />
-
-          {previewUrls.length > 0 && (
-            <div className="mt-4 grid grid-cols-3 gap-4">
-              {previewUrls.map((url, index) => (
-                <div key={index} className="relative border rounded-md overflow-hidden shadow-sm group">
-                  <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover" />
-                  <button
-                    onClick={() => handleRemoveFile(index)}
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="text-sm text-gray-600">
-          You can upload your <span className="font-semibold">Aadhar, Pancard, Passport, SSLC</span>, or other valid documents.
-        </div>
-
-        <button
-          onClick={handleSubmit}
-          className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 transition"
-        >
-          Submit Documents
-        </button>
       </div>
-    </div>
+    </>
   );
 };
 

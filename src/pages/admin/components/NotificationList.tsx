@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { protectedGetRequest, protectedPutRequest } from '../../../hooks/api';
+import ConfirmDialog from '../../../components/ConfirmDialog';
+import ToastMessage from '../../../components/ToastMessage';  // Import Toast Component
 
 interface Notification {
   _id: string;
@@ -8,7 +10,7 @@ interface Notification {
   date: string;
   requestStatus: string;
   documents: string[];
-  rejectReason?: string; // Optional field for rejected reason
+  rejectReason?: string;
 }
 
 const NotificationList: React.FC = () => {
@@ -17,6 +19,13 @@ const NotificationList: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [showRejectInput, setShowRejectInput] = useState<boolean>(false);
   const [rejectReason, setRejectReason] = useState<string>('');
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [actionType, setActionType] = useState<'accepted' | 'rejected' | null>(null);
+
+  // Toast States
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -28,9 +37,10 @@ const NotificationList: React.FC = () => {
     fetchNotifications();
   }, []);
 
-  const formatDate = (isoDate: string) => {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  const handleToast = (message: string, severity: 'success' | 'error') => {
+    setToastMessage(message);
+    setToastSeverity(severity);
+    setToastOpen(true);
   };
 
   const openModal = (notification: Notification) => {
@@ -58,38 +68,41 @@ const NotificationList: React.FC = () => {
     }
   };
 
-  const handleAction = async (status: 'accepted' | 'rejected') => {
-    if (!selectedNotification) return;
+  const handleConfirmAction = async () => {
+    if (!selectedNotification || !actionType) return;
 
-    if (status === 'rejected' && rejectReason.trim() === '') {
-      alert('Please provide a reject reason.');
+    if (actionType === 'rejected' && rejectReason.trim() === '') {
+      handleToast('Please provide a reject reason.', 'error');
       return;
     }
 
     try {
-      const payload: any = { requestStatus: status };
-      if (status === 'rejected') {
+      const payload: any = { requestStatus: actionType };
+      if (actionType === 'rejected') {
         payload.rejectReason = rejectReason;
       }
 
       const response = await protectedPutRequest(`/admin/notification/${selectedNotification._id}`, payload);
 
       if (response && response.data && response.data.success) {
-        alert(`Notification ${status}`);
+        handleToast(`Notification ${actionType} successfully`, 'success');
         setNotifications((prev) =>
           prev.map((n) =>
             n._id === selectedNotification._id
-              ? { ...n, requestStatus: status, rejectReason: status === 'rejected' ? rejectReason : undefined }
+              ? { ...n, requestStatus: actionType, rejectReason: actionType === 'rejected' ? rejectReason : undefined }
               : n
           )
         );
         closeModal();
       } else {
-        alert('Failed to update status');
+        handleToast('Failed to update status', 'error');
       }
     } catch (error) {
       console.error(error);
-      alert('An error occurred');
+      handleToast('An error occurred', 'error');
+    } finally {
+      setConfirmDialogOpen(false);
+      setActionType(null);
     }
   };
 
@@ -111,7 +124,7 @@ const NotificationList: React.FC = () => {
                 <div className="flex-1">
                   <h3 className="text-lg font-medium text-gray-900">{notification.title}</h3>
                   <p className="text-sm text-gray-600 line-clamp-2">{notification.message}</p>
-                  <div className="mt-2 text-xs text-gray-500">{formatDate(notification.date)}</div>
+                  <div className="mt-2 text-xs text-gray-500">{new Date(notification.date).toLocaleString()}</div>
                 </div>
                 <span
                   className={`text-xs font-semibold px-2 py-1 rounded-lg ${
@@ -177,14 +190,12 @@ const NotificationList: React.FC = () => {
               {selectedNotification.message}
             </div>
 
-            {/* Show Reject Reason if status is rejected */}
             {selectedNotification.requestStatus === 'rejected' && selectedNotification.rejectReason && (
               <div className="mt-4 p-3 bg-red-50 text-sm text-red-700 rounded-md">
                 <strong>Reject Reason:</strong> {selectedNotification.rejectReason}
               </div>
             )}
 
-            {/* Reject Reason Input */}
             {showRejectInput && (
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -199,7 +210,6 @@ const NotificationList: React.FC = () => {
               </div>
             )}
 
-            {/* Action Buttons - Only if status is pending */}
             {selectedNotification.requestStatus === 'pending' && (
               <div className="mt-6 flex justify-end gap-3">
                 {!showRejectInput ? (
@@ -211,7 +221,10 @@ const NotificationList: React.FC = () => {
                   </button>
                 ) : (
                   <button
-                    onClick={() => handleAction('rejected')}
+                    onClick={() => {
+                      setActionType('rejected');
+                      setConfirmDialogOpen(true);
+                    }}
                     className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
                   >
                     Submit Reject Reason
@@ -219,7 +232,10 @@ const NotificationList: React.FC = () => {
                 )}
 
                 <button
-                  onClick={() => handleAction('accepted')}
+                  onClick={() => {
+                    setActionType('accepted');
+                    setConfirmDialogOpen(true);
+                  }}
                   className={`px-4 py-2 rounded-md transition ${
                     showRejectInput
                       ? 'bg-gray-400 cursor-not-allowed'
@@ -234,6 +250,30 @@ const NotificationList: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        title="Are you sure?"
+        message={
+          actionType === 'accepted'
+            ? 'Do you want to accept this request?'
+            : 'Do you want to reject this request?'
+        }
+        onConfirm={handleConfirmAction}
+        onCancel={() => {
+          setConfirmDialogOpen(false);
+          setActionType(null);
+        }}
+      />
+
+      {/* Toast Message */}
+      <ToastMessage
+        open={toastOpen}
+        message={toastMessage}
+        severity={toastSeverity}
+        onClose={() => setToastOpen(false)}
+      />
     </div>
   );
 };
