@@ -4,6 +4,7 @@ import UsersList from "./pages/UsersList"
 import OwnersList from "./pages/OwnersList"
 import Navbar from "../../components/Navbar"
 import NotificationList from "./components/NotificationList"
+import ProfilePage from "../../components/Profile"
 
 const AdminDashboard = () => {
 
@@ -24,6 +25,7 @@ const AdminDashboard = () => {
               {active === "Notifications" && <NotificationList />}
               {active === "Users" && <UsersList />}
               {active === "Owners" && <OwnersList />}
+              {active === "Profile" && <ProfilePage />}
             </div>
           </div>
         </div>

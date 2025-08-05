@@ -22,6 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ active, changeActive }) => {
     { title: 'Notifications', icon: <GrUserWorker color='#030032' /> },
     { title: 'Users', icon: <GrUserWorker color='#030032' /> },
     { title: 'Owners', icon: <GrUserWorker color='#030032' /> },
+    { title: 'Profile', icon: <GrUserWorker color='#030032' /> },
   ];
 
   return (

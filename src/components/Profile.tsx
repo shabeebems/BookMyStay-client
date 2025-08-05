@@ -3,6 +3,7 @@ import { FaPlus } from 'react-icons/fa6';
 import { logoutRequest, protectedGetRequest, protectedPostRequest, protectedPutRequest } from '../hooks/api';
 import { useNavigate } from 'react-router-dom';
 import ToastMessage from '../components/ToastMessage';
+import axios from 'axios';
 
 interface Address {
   city?: string;
@@ -29,7 +30,10 @@ const ProfilePage: React.FC = () => {
     image: '',
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isEditing, setIsEditing] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
@@ -106,12 +110,56 @@ const ProfilePage: React.FC = () => {
         [name]: value
       }));
     }
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  const handleSaveProfile = () => {
-    console.log("Updated Profile Data:", user);
-    setIsEditing(false);
-    showToast("Profile updated successfully (mock)", 'success');
+  const handleSaveProfile = async () => {
+    setIsSavingProfile(true);
+    try {
+      const payload = {
+        name: user.name,
+        mobile: user.mobile,
+        address: {
+          city: user.address?.city || '',
+          state: user.address?.state || '',
+        }
+      };
+
+      await protectedPostRequest(`/profile`, payload);
+      showToast("Profile updated successfully", 'success');
+      setIsEditing(false);
+      setErrors({});
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const responseData = error.response?.data;
+        if (Array.isArray(responseData?.errors)) {
+          const errorMap: { [key: string]: string } = {};
+
+          responseData.errors.forEach((err: { field: string; message: string }) => {
+            if (err.field === 'address') {
+              if (err.message.toLowerCase().includes('city')) {
+                errorMap['city'] = err.message;
+              } else if (err.message.toLowerCase().includes('state')) {
+                errorMap['state'] = err.message;
+              } else {
+                errorMap['address'] = err.message;
+              }
+            } else {
+              errorMap[err.field] = err.message;
+            }
+          });
+
+          setErrors(errorMap);
+          showToast("Validation failed. Please fix errors.", 'error');
+        } else if (responseData?.message) {
+          showToast(responseData.message, 'error');
+        }
+      } else {
+        showToast("An unexpected error occurred", 'error');
+      }
+    } finally {
+      setIsSavingProfile(false);
+    }
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -137,19 +185,27 @@ const ProfilePage: React.FC = () => {
       return;
     }
 
-    const response = await protectedPostRequest("/change-password", { oldPassword, newPassword });
-    if (response && response.data && response.data.success) {
-      setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
-      setShowChangePassword(false);
-      showToast("Password changed successfully", 'success');
+    try {
+      const response = await protectedPostRequest("/change-password", { oldPassword, newPassword });
+      if (response && response.data && response.data.success) {
+        setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        setShowChangePassword(false);
+        showToast("Password changed successfully", 'success');
 
-      setTimeout(async () => {
-        await logoutRequest("/auth/logout");
-        localStorage.removeItem('token');
-        navigate(`/login/user`);
-      }, 1000);
-    } else {
-      showToast("Failed to change password", 'error');
+        setTimeout(async () => {
+          await logoutRequest("/auth/logout");
+          localStorage.removeItem('token');
+          navigate(`/login/user`);
+        }, 1000);
+      } else {
+        showToast("Failed to change password", 'error');
+      }
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        showToast(error.response.data.message || "Invalid request", 'error');
+      } else {
+        showToast("An unexpected error occurred", 'error');
+      }
     }
   };
 
@@ -170,7 +226,7 @@ const ProfilePage: React.FC = () => {
 
       <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: `url('/background.jpg')` }}>
         <div className="bg-white/80 backdrop-blur-md shadow-xl rounded-3xl p-8 sm:p-10 md:p-12 w-full max-w-3xl mx-4">
-          {/* Profile Image */}
+
           <div className="flex justify-center mb-6 relative">
             <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center text-3xl font-semibold text-gray-600">
               <div className="w-full h-full rounded-full overflow-hidden">
@@ -183,7 +239,6 @@ const ProfilePage: React.FC = () => {
                 )}
               </div>
 
-              {/* Loading Spinner Overlay */}
               {isUploading && (
                 <div className="absolute inset-0 bg-white/70 flex items-center justify-center rounded-full">
                   <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -193,9 +248,7 @@ const ProfilePage: React.FC = () => {
               <button
                 onClick={handleImageClick}
                 disabled={isUploading}
-                className={`absolute -top-2 -left-2 w-8 h-8 rounded-full ${
-                  isUploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                } text-white flex items-center justify-center shadow-md transition`}
+                className={`absolute -top-2 -left-2 w-8 h-8 rounded-full ${isUploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white flex items-center justify-center shadow-md transition`}
                 title="Edit Profile Picture"
               >
                 <FaPlus size={12} />
@@ -211,7 +264,6 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Profile Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {[
               { label: 'Name', name: 'name', value: user.name, editable: true },
@@ -227,14 +279,14 @@ const ProfilePage: React.FC = () => {
                   name={field.name}
                   value={field.value || ''}
                   onChange={handleProfileChange}
-                  className={`w-full px-4 py-2 rounded-xl ${field.editable ? 'bg-white' : 'bg-gray-100'} border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300`}
+                  className={`w-full px-4 py-2 rounded-xl ${field.editable ? 'bg-white' : 'bg-gray-100'} border ${errors[field.name] ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 ${errors[field.name] ? 'focus:ring-red-300' : 'focus:ring-blue-300'}`}
                   readOnly={!field.editable || !isEditing}
                 />
+                {errors[field.name] && <p className="text-red-600 text-xs mt-1">{errors[field.name]}</p>}
               </div>
             ))}
           </div>
 
-          {/* Action Buttons */}
           <div className="flex justify-center gap-4 mb-6">
             {!isEditing ? (
               <button
@@ -246,9 +298,10 @@ const ProfilePage: React.FC = () => {
             ) : (
               <button
                 onClick={handleSaveProfile}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition"
+                disabled={isSavingProfile}
+                className={`px-6 py-2 ${isSavingProfile ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white rounded-full transition`}
               >
-                Save Changes
+                {isSavingProfile ? 'Saving...' : 'Save Changes'}
               </button>
             )}
             <button
@@ -259,7 +312,6 @@ const ProfilePage: React.FC = () => {
             </button>
           </div>
 
-          {/* Change Password Form */}
           {showChangePassword && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">

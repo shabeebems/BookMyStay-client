@@ -15,6 +15,7 @@ import UserDashboard from './pages/user/dashboard/UserDashboard'
 import NotVerified from './pages/owner/NotVerified'
 import UnverifiedOwnerWrapper from './wrappers/UnverifiedOwnerWrapper'
 import PublicOrUserWrapper from './wrappers/PublicOrUserWrapper'
+import AuthFailed from './pages/auth/components/googleAuth/AuthFailed'
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route path="/forgot-password/:role" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth-success" element={<AuthSuccess />} />
+        <Route path="/auth-failed" element={<AuthFailed />} />
       </Route>
 
       <Route element={<PublicOrUserWrapper />}>
