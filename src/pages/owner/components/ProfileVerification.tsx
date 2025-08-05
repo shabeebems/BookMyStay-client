@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { protectedGetRequest, protectedPostRequest } from '../../../hooks/api';
-import ToastMessage from '../../../components/ToastMessage';  // Assuming path
+import ToastMessage from '../../../components/ToastMessage';
 
 interface Address {
   city?: string;
@@ -34,6 +34,7 @@ const ProfileVerificationPage = () => {
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -54,7 +55,6 @@ const ProfileVerificationPage = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-
       const newFiles: File[] = [];
       const newUrls: string[] = [];
 
@@ -100,6 +100,7 @@ const ProfileVerificationPage = () => {
       return;
     }
 
+    setIsSubmitting(true);  // Start loading
     try {
       const base64Files = await Promise.all(selectedFiles.map(file => convertFileToBase64(file)));
 
@@ -117,6 +118,8 @@ const ProfileVerificationPage = () => {
     } catch (error) {
       console.error(error);
       showToast('An error occurred while uploading documents.', 'error');
+    } finally {
+      setIsSubmitting(false);  // End loading
     }
   };
 
@@ -163,7 +166,6 @@ const ProfileVerificationPage = () => {
             </div>
           </div>
 
-          {/* Document Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Upload Documents (Max 3, Each below 2MB)
@@ -199,9 +201,16 @@ const ProfileVerificationPage = () => {
 
           <button
             onClick={handleSubmit}
-            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 transition"
+            disabled={isSubmitting}
+            className={`w-full py-2 px-4 ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'} text-white font-semibold rounded-md transition flex items-center justify-center`}
           >
-            Submit Documents
+            {isSubmitting && (
+              <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+            )}
+            {isSubmitting ? 'Submitting...' : 'Submit Documents'}
           </button>
         </div>
       </div>
