@@ -11,7 +11,7 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, role }) => {
   const [otp, setOtp] = useState<string[]>(['', '', '', '']);
   const [message, setMessage] = useState<string>('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
-  const [count, setCount] = useState<number>(3);
+  const [count, setCount] = useState<number>(30);
   const [showResend, setShowResend] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -79,7 +79,7 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, role }) => {
     e.preventDefault();
     try {
       setShowResend(false);
-      setCount(3);
+      setCount(30);
       await postRequest('/auth/resend-otp', { email });
 
       setMessageType('success');
@@ -154,8 +154,9 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, role }) => {
             </div>
           ) : (
             <p className="mt-2 text-center text-sm text-gray-900">
-              Resend button will show after {count}s
+              Resend button will show after <span className="text-red-500">{count}s</span>
             </p>
+
           )}
         </form>
       </div>
