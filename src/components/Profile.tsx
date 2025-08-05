@@ -136,20 +136,28 @@ const ProfilePage: React.FC = () => {
       showToast("New password must be at least 6 characters.", 'error');
       return;
     }
-
-    const response = await protectedPostRequest("/change-password", { oldPassword, newPassword });
-    if (response && response.data && response.data.success) {
-      setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
-      setShowChangePassword(false);
-      showToast("Password changed successfully", 'success');
-
-      setTimeout(async () => {
-        await logoutRequest("/auth/logout");
-        localStorage.removeItem('token');
-        navigate(`/login/user`);
-      }, 1000);
-    } else {
-      showToast("Failed to change password", 'error');
+    
+    try {
+      const response = await protectedPostRequest("/change-password", { oldPassword, newPassword });
+      if (response && response.data && response.data.success) {
+        setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        setShowChangePassword(false);
+        showToast("Password changed successfully", 'success');
+        
+        setTimeout(async () => {
+          await logoutRequest("/auth/logout");
+          localStorage.removeItem('token');
+          navigate(`/login/user`);
+        }, 1000);
+      } else {
+        showToast("Failed to change password", 'error');
+      }
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        showToast(error.response.data.message || "Invalid request", 'error');
+      } else {
+        showToast("An unexpected error occurred", 'error');
+      }
     }
   };
 
