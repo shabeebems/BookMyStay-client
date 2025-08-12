@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { MdOutlineDashboard } from "react-icons/md";
-import { CgProfile } from "react-icons/cg";
 import { IoIosArrowBack } from "react-icons/io";
+import { FaRegUserCircle, FaHotel } from 'react-icons/fa';
+import { IoNotificationsOutline } from 'react-icons/io5';
 
 type SidebarProps = {
   active: string;
@@ -20,8 +21,9 @@ const OwnerSidebar: React.FC<SidebarProps> = ({ active, changeActive, isVerified
 
   const menus = [
     { title: 'Dashboard', icon: <MdOutlineDashboard color="#0E4D64" /> },
-    { title: 'Notification', icon: <CgProfile color="#0E4D64" /> },
-    { title: 'Profile', icon: <CgProfile color="#0E4D64" /> },
+    { title: 'Hotels', icon: <FaHotel color="#0E4D64" /> },
+    { title: 'Notification', icon: <IoNotificationsOutline color="#0E4D64" /> },
+    { title: 'Profile', icon: <FaRegUserCircle color="#0E4D64" /> },
   ];
 
   return (
