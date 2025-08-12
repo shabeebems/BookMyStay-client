@@ -7,6 +7,7 @@ interface Notification {
   message: string;
   date: string;
   requestStatus: string;
+  rejectReason: string;
   documents: string[];
 }
 
@@ -139,9 +140,16 @@ const NotificationList: React.FC = () => {
 
             {selectedNotification.requestStatus === 'rejected' && (
               <div className="mt-4 text-sm text-red-600 font-medium">
-                Your request has been rejected. You can re-apply by following:
-                <div className="mt-1 font-semibold text-gray-700">
-                  Dashboard &gt; choose files &gt; submit documents
+                <div>Your request has been rejected.</div>
+                <div className="mt-2">
+                  <span className="font-semibold">Reject Reason: </span>
+                  {selectedNotification.rejectReason || 'No reason provided.'}
+                </div>
+                <div className="mt-4 font-medium text-gray-700">
+                  You can re-apply by following:
+                  <div className="mt-1 font-semibold text-gray-700">
+                    Dashboard &gt; choose files &gt; submit documents
+                  </div>
                 </div>
               </div>
             )}

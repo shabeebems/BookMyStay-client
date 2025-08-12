@@ -2,7 +2,7 @@ import { useCallback, useState } from "react"
 import Sidebar from "./components/Sidebar"
 import Navbar from "../../components/Navbar"
 import ProfileVerification from "./components/ProfileVerification"
-import NotificationPage from "./pages/NotificationList"
+import NotificationPage from "./pages/Notification"
 
 const NotVerified = () => {
   

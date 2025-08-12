@@ -16,6 +16,7 @@ import NotVerified from './pages/owner/NotVerified'
 import UnverifiedOwnerWrapper from './wrappers/UnverifiedOwnerWrapper'
 import PublicOrUserWrapper from './wrappers/PublicOrUserWrapper'
 import AuthFailed from './pages/auth/components/googleAuth/AuthFailed'
+import HotelAddPage from './pages/owner/components/AddHotelModal'
 
 function App() {
 
@@ -49,6 +50,7 @@ function App() {
       {/* owner route */}
       <Route element={<RoleBasedWrapper allowedRoles={['owner']} />}>
         <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+        {/* <Route path="/add-hotel" element={<HotelAddPage />} /> */}
       </Route>
 
       <Route element={<UnverifiedOwnerWrapper />}>
