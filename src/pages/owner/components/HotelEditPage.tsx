@@ -22,7 +22,6 @@ interface Hotel {
   facilities: string[];
   description: string;
   images: string[];
-  documents: string[]; // required here
 }
 
 interface HotelEditPageProps {
@@ -53,7 +52,7 @@ const HotelEditPage: React.FC<HotelEditPageProps> = ({ hotel, onCancel, onUpdate
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "images" | "documents"
+    field: "images"
   ) => {
     if (e.target.files) {
       const files = Array.from(e.target.files).slice(0, 3);
@@ -65,7 +64,7 @@ const HotelEditPage: React.FC<HotelEditPageProps> = ({ hotel, onCancel, onUpdate
     }
   };
 
-  const handleRemoveFile = (index: number, field: "images" | "documents") => {
+  const handleRemoveFile = (index: number, field: "images") => {
     setFormData((prev) => ({
       ...prev,
       [field]: prev[field].filter((_, i) => i !== index),
@@ -78,6 +77,7 @@ const HotelEditPage: React.FC<HotelEditPageProps> = ({ hotel, onCancel, onUpdate
     setFormErrorMessage("");
 
     try {
+      console.log(formData)
       await protectedPutRequest(`owner/hotels/${hotel._id}`, formData);
       onUpdated();
     } catch (error) {
@@ -145,20 +145,6 @@ const HotelEditPage: React.FC<HotelEditPageProps> = ({ hotel, onCancel, onUpdate
           {errors.facilities && <p className="text-red-600 text-xs mt-1">{errors.facilities}</p>}
         </FormControl>
 
-        <TextField
-          label="Description"
-          multiline
-          rows={3}
-          value={formData.description}
-          onChange={(e) => {
-            setFormData({ ...formData, description: e.target.value });
-            if (errors.description) setErrors((prev) => ({ ...prev, description: "" }));
-          }}
-          fullWidth
-          error={!!errors.description}
-          helperText={errors.description}
-        />
-
         {/* Images Upload */}
         <div>
           <label>Upload Images (max 3)</label>
@@ -173,23 +159,6 @@ const HotelEditPage: React.FC<HotelEditPageProps> = ({ hotel, onCancel, onUpdate
                   onClick={() => handleRemoveFile(index, "images")}
                   className="absolute top-0 right-0 bg-white"
                 >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Documents Upload */}
-        <div>
-          <label>Upload Documents (max 3)</label>
-          <input type="file" accept=".pdf,.doc,.docx,image/*" multiple onChange={(e) => handleFileChange(e, "documents")} />
-          {errors.documents && <p className="text-red-600 text-xs mt-1">{errors.documents}</p>}
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {formData.documents.map((doc, index) => (
-              <div key={index} className="flex items-center gap-1 border rounded p-1">
-                <span className="truncate max-w-[100px]">Document {index + 1}</span>
-                <IconButton size="small" onClick={() => handleRemoveFile(index, "documents")}>
                   <DeleteIcon fontSize="small" />
                 </IconButton>
               </div>
