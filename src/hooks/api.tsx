@@ -13,5 +13,6 @@ export const putRequest = (route: string, data: object) => API.put(route, data);
 export const protectedGetRequest = (route: string) => apiClient.get(route);
 export const protectedPostRequest = (route: string, data: object) => apiClient.post(route, data);
 export const protectedPutRequest = (route: string, data: object) => apiClient.put(route, data);
+export const protectedPatchRequest = (route: string) => apiClient.patch(route);
 
 export const logoutRequest = (route: string) => API.post(route);
