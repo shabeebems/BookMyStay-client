@@ -16,7 +16,6 @@ import NotVerified from './pages/owner/NotVerified'
 import UnverifiedOwnerWrapper from './wrappers/UnverifiedOwnerWrapper'
 import PublicOrUserWrapper from './wrappers/PublicOrUserWrapper'
 import AuthFailed from './pages/auth/components/googleAuth/AuthFailed'
-import HotelAddPage from './pages/owner/components/AddHotelModal'
 
 function App() {
 

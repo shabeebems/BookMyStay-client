@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { X, Upload, Trash2, Plus } from "lucide-react";
 import axios from "axios";
-import { protectedPutRequest } from "../../../hooks/api";
+import { protectedPutRequest } from "../../../../hooks/api";
 
 interface Hotel {
   _id: string;
